@@ -20,42 +20,70 @@ import WishList from '../screens/WishList';
 import Cart from '../screens/Cart';
 import CartListScreen from '../screens/CartListSceen';
 import { useSelector } from 'react-redux';
+import auth from '@react-native-firebase/auth';
+import { useState } from 'react';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 const OnboardingScreenNavigation = () => {
+  const [isUserLogin, setIsUserLogin] = useState(false);
+  auth().onAuthStateChanged((user) => {
+    if(user) setIsUserLogin(true);
+  });
+
   const items = useSelector(state => state);
   console.log(items);
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Onboarding"
-        component={Onboarding}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="SignUp"
-        component={SignUp}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="OtpVerify"
-        component={OtpVerify}
-        options={{headerShown: false}}
-      />
+      {!isUserLogin ? 
+        <Stack.Screen
+          name="Onboarding"
+          component={Onboarding}
+          options={{headerShown: false}}
+        />
+        : null
+      }
+
+      {!isUserLogin ? 
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{headerShown: false}}
+        />
+        : null
+      }
+
+      {!isUserLogin ? 
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{headerShown: false}}
+        />
+        : null
+      }
+
       <Stack.Screen
         name="MyTabs"
         component={MyTabs}
         options={{headerShown: false}}
       />
+      {/* <Stack.Screen
+        name="OtpVerify"
+        component={OtpVerify}
+        options={{headerShown: false}}
+      /> */}
+
     </Stack.Navigator>
   );
 };
+
 const MyTabs = () => {
+  const [isUserLogin, setIsUserLogin] = useState(false);
+  auth().onAuthStateChanged((user) => {
+    if(user) setIsUserLogin(true);
+  });
+
+  if(isUserLogin) {
   return (
     <>
       <Tab.Navigator
@@ -69,64 +97,75 @@ const MyTabs = () => {
             position: 'absolute',
             height: 50,
           },
-        }}>
-        <Tab.Screen
-          name="Home"
-          component={StackNavigation}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({focused}) => {
-              return (
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Icon name="home" size={25} color={'#E52B50'} />
-                </View>
-              );
-            },
-          }}
-        />
-        <Tab.Screen
-          name="Categories"
-          component={CategoriesNavigator}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({focused}) => {
-              return (
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Icon name="list" size={25} color={'#E52B50'} />
-                </View>
-              );
-            },
-          }}
-        />
-        <Tab.Screen
-          name="MyCart"
-          component={CartNavigator}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({focused}) => {
-              return (
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Icon name="shopping-cart" size={25} color={'#E52B50'} />
-                </View>
-              );
-            },
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileStackNavigator}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({}) => {
-              return (
-                <Ionicons name="person-circle" size={25} color={'#E52B50'} />
-              );
-            },
-          }}
-        />
+        }}
+      >
+      <Tab.Screen
+        name="Home"
+        component={StackNavigation}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Icon name="home" size={25} color={'#E52B50'} />
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Categories"
+        component={CategoriesNavigator}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Icon name="list" size={25} color={'#E52B50'} />
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="MyCart"
+        component={CartNavigator}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({focused}) => {
+            return (
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Icon name="shopping-cart" size={25} color={'#E52B50'} />
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStackNavigator}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({}) => {
+            return (
+              <Ionicons name="person-circle" size={25} color={'#E52B50'} />
+            );
+          },
+        }}
+      />
       </Tab.Navigator>
     </>
   );
+  }
+  else {
+    <Stack.Navigator>
+      <Stack.Screen
+        name="OnboardingScreenNavigation"
+        component={OnboardingScreenNavigation}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
+  }
 };
 
 const StackNavigation = () => {

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "841661067412",
+    "project_id": "shopxpress-backend",
+    "storage_bucket": "shopxpress-backend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841661067412:android:40f4d2af5629d2ab0e8481",
+        "android_client_info": {
+          "package_name": "com.swiggy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "841661067412-1i112l7u1jfjhj4cdtqaecq8kmbspav8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiW2EybvJXnq4YtyYLGchfcwIycN6eSeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "841661067412-1i112l7u1jfjhj4cdtqaecq8kmbspav8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

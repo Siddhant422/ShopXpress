@@ -1,117 +1,146 @@
 import { StyleSheet, Text, View,TouchableOpacity ,ImageBackground,TextInput} from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
-const EditProfile = () => {
+import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+
+const EditProfile = ({navigation}) => {
+  const [newData, setNewData] = useState({
+    name: '',
+    phoneNo: '',
+    pincode: '',
+    city: '',
+    state: ''
+  })
+
+  const handleUpdate = async () => {
+    try {
+      const currUser  = auth().currentUser;
+      await firestore()
+      .collection('users')
+      .doc(currUser.uid)
+      .update({...newData});
+
+      alert('Data Updated');
+      navigation.goBack();
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
   return (
     <View style={styles.container}>
-     <View style={{margin:20}}>
-      <View style={{alignItems:'center'}}>
-      <TouchableOpacity>
-        <View style={{
-          height:100,
-          width:100,
-          borderRadius:15,
-          justifyContent:'center',
-          alignItems:'center'
-        }}>
-          <ImageBackground
-          source={{
-      uri:"https://images.unsplash.com/photo-1627087820883-7a102b79179a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBvcnRhcml0JTIwbWFufGVufDB8fDB8fHww&auto=format&fit=crop&w=1000&q=60"
-          }}
-          style={{height:100,width:100}}
-          imageStyle={{borderRadius:20}}
-          >
+      <View style={{margin:20}}>
+        <View style={{alignItems:'center'}}>
+          <TouchableOpacity>
             <View style={{
-              flex:1,
+              height:100,
+              width:100,
+              borderRadius:15,
               justifyContent:'center',
               alignItems:'center'
             }}>
-              <Text>
-                <Icon name='camera-alt' color={'white'} size={30}
-                style={{
-                  opacity:0.7,
-                  alignItems:'center',
+              <ImageBackground
+              source={require('../assets/profile.png')}
+              style={{height:100,width:100}}
+              imageStyle={{borderRadius:20}}
+              >
+                <View style={{
+                  flex:1,
                   justifyContent:'center',
-                  borderWidth:1,
-                  borderColor:'#fff',
-                  borderRadius:10,
-                }}
-                ></Icon>
-              </Text>
+                  alignItems:'center'
+                }}>
+                  <Text>
+                    <Icon name='camera-alt' color={'white'} size={30}
+                    style={{
+                      opacity:0.7,
+                      alignItems:'center',
+                      justifyContent:'center',
+                      borderWidth:1,
+                      borderColor:'#fff',
+                      borderRadius:10,
+                    }}
+                    ></Icon>
+                  </Text>
+                </View>
+              </ImageBackground>
             </View>
-          </ImageBackground>
+          </TouchableOpacity>
+        {/* <Text style={{marginTop:10, fontSize:18,fontWeight:'bold'}}>Pranjal Srivastava</Text> */}
         </View>
-      </TouchableOpacity>
-      <Text style={{marginTop:10, fontSize:18,fontWeight:'bold'}}>Pranjal Srivastava</Text>
+
+        <View style={styles.action}> 
+          <FontAwesome name='user-o' size={20} />
+          <TextInput
+            placeholder='Name'
+            placeholderTextColor={'#666666'}
+            style={styles.textInput}
+            autoCorrect={false}
+            onChangeText={text => setNewData({...newData, name: text})}
+          >
+          </TextInput>
+        </View>
+
+        <View style={styles.action}> 
+          <FontAwesome name='mobile-phone' size={25} />
+          <TextInput
+            placeholder='Phone Number'
+            keyboardType='number-pad'
+            maxLength={10}
+            placeholderTextColor={'#666666'}
+            style={styles.textInput}
+            autoCorrect={false}
+            onChangeText={text => setNewData({...newData, phoneNo: text})}
+          >
+          </TextInput>
+        </View>
+
+        <View style={styles.action}> 
+          <MaterialCommunityIcons name='map-marker' size={25}/>
+          <TextInput
+            placeholder='Pin Code'
+            keyboardType='number-pad'
+            maxLength={6}
+            placeholderTextColor={'#666666'}
+            style={styles.textInput}
+            autoCorrect={false}
+            onChangeText={text => setNewData({...newData, pincode: text})}
+          >
+          </TextInput>
+        </View>
+
+        <View style={styles.action}> 
+          <MaterialCommunityIcons name='city' size={25}/>
+          <TextInput
+            placeholder='City'
+            placeholderTextColor={'#666666'}
+            style={styles.textInput}
+            autoCorrect={false}
+            onChangeText={text => setNewData({...newData, city: text})}
+          >
+          </TextInput>
+        </View>
+
+        <View style={styles.action}> 
+          <FontAwesome name='map' size={20} />
+          <TextInput
+            placeholder='State'
+            placeholderTextColor={'#666666'}
+            style={styles.textInput}
+            autoCorrect={false}
+            onChangeText={text => setNewData({...newData, state: text})}
+          >
+          </TextInput>
+        </View>
+
+        <TouchableOpacity style={styles.commandButton} onPress={()=>handleUpdate()}>
+          <Text style={styles.panelButtonTitle}>Submit</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.action}> 
-     <FontAwesome name='user-o' size={20}></FontAwesome>
-       <TextInput
-       placeholder='First Name'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <View style={styles.action}> 
-     <FontAwesome name='user-o' size={20}></FontAwesome>
-       <TextInput
-       placeholder='Last Name'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <View style={styles.action}> 
-     <MaterialCommunityIcons name='email-outline' size={20}></MaterialCommunityIcons>
-       <TextInput
-       placeholder='Email'
-       keyboardType='email-address'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <View style={styles.action}> 
-     <FontAwesome name='mobile-phone' size={25}></FontAwesome>
-       <TextInput
-       placeholder='Phone'
-       keyboardType='number-pad'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <View style={styles.action}> 
-     <MaterialCommunityIcons name='map-marker' size={25}></MaterialCommunityIcons>
-       <TextInput
-       placeholder='City'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <View style={styles.action}> 
-     <FontAwesome name='globe' size={20}></FontAwesome>
-       <TextInput
-       placeholder='Country'
-       placeholderTextColor={'#666666'}
-       style={styles.textInput}
-       autoCorrect={false}
-       >
-       </TextInput>
-      </View>
-      <TouchableOpacity style={styles.commandButton} onPress={()=>{}}>
-        <Text style={styles.panelButtonTitle}>Submit</Text>
-      </TouchableOpacity>
-     </View>
     </View>
   )
 }

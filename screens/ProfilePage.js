@@ -5,24 +5,77 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  RefreshControl
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Avatar, Title, Caption} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import auth from '@react-native-firebase/auth';
+import {StackActions, useNavigation} from '@react-navigation/native';
+import {MyTabs} from '../navigation/BottomNavigation';
+import user from '../data/Schema/userSchema';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
-const App = ({navigation}) => {
+const ProfilePage = () => {
+  const navigation = useNavigation();
+  const [userInfo, setUserInfo] = useState(user);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleLogout = async () => {
+    await auth().signOut();
+    // navigation.goBack();
+    // await MyTabs();
+    // navigation.navigate('OnboardingScreenNavigation');
+    // navigation.dispatch(StackActions.replace('OnboardingScreenNavigation'));
+  };
+
+  useEffect(() => {
+    getDatabase();
+  }, [])
+
+  const getDatabase = async () => {
+    try {
+      const currUser  = auth().currentUser;
+      console.log(currUser);
+      const data = await firestore().collection('users').doc(currUser.uid).get();
+      console.log(data._data);
+      // const imgdata = await storage().ref('/users/location.png').getDownloadURL();
+      // console.log(imgdata);
+      // data._data.photo = imgdata;
+      setUserInfo(data._data);
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    getDatabase();
+    setIsRefreshing(false);
+    // setTimeout(() => {setIsRefreshing(false)}, 2000);
+  }
+
   function EditProfileHandler() {
     navigation.navigate('EditProfile');
   }
   function EditFormListHandler() {
     navigation.navigate('FormList');
   }
-  function EditProductListHandler(){ 
-    navigation.navigate('ProductList')
+  function EditProductListHandler() {
+    navigation.navigate('ProductList');
   }
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView 
+        refreshControl={
+          <RefreshControl
+            refreshing = {isRefreshing}
+            onRefresh={() => handleRefresh()} 
+          />
+        }
+      >
         <View style={styles.userInfoSectionOne}>
           <View
             style={[
@@ -30,9 +83,11 @@ const App = ({navigation}) => {
               styles.backgroundStyle,
             ]}>
             <Avatar.Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1627087820883-7a102b79179a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHBvcnRhcml0JTIwbWFufGVufDB8fDB8fHww&auto=format&fit=crop&w=1000&q=60',
-              }}
+              source={
+                (userInfo.photo == '') ? 
+                require('../assets/profile.png') :
+                {uri: userInfo.photo}
+              }
               size={80}
             />
             <View style={{marginLeft: 20}}>
@@ -44,9 +99,9 @@ const App = ({navigation}) => {
                     marginBottom: 5,
                   },
                 ]}>
-                Pranjal Srivastava
+                {userInfo.name}
               </Title>
-              <Caption style={styles.caption}>pranjals01052@gmail.com</Caption>
+              <Caption style={styles.caption}>{userInfo.email}</Caption>
             </View>
           </View>
         </View>
@@ -55,19 +110,19 @@ const App = ({navigation}) => {
             <Text>
               <Icon name="location-pin" size={20} color="#E52B50" />
             </Text>
-            <Text style={{marginLeft: 20}}>Palri,Sonipat</Text>
+            <Text style={{marginLeft: 20}}>{userInfo.city + ', ' + userInfo.state}</Text>
           </View>
           <View style={styles.row}>
             <Text>
               <Icon name="phone" size={20} color="#E52B50" />
             </Text>
-            <Text style={{marginLeft: 20}}>+91 9984733790</Text>
+            <Text style={{marginLeft: 20}}>{"+91 " + userInfo.phoneNo}</Text>
           </View>
           <View style={styles.row}>
             <Text>
               <Icon name="mail" size={20} color="#E52B50" />
             </Text>
-            <Text style={{marginLeft: 20}}>@iiits.sonepat.ac.in</Text>
+            <Text style={{marginLeft: 20}}>{userInfo.email}</Text>
           </View>
         </View>
         <Text
@@ -130,7 +185,7 @@ const App = ({navigation}) => {
           </View>
 
           <View>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
               <Text>
                 <Icon name="logout" size={20} color="#E52B50" />
               </Text>
@@ -143,13 +198,13 @@ const App = ({navigation}) => {
   );
 };
 
-export default App;
+export default ProfilePage;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 10,
-    marginBottom: 65
+    marginBottom: 65,
   },
   userInfoSectionOne: {
     paddingHorizontal: 30,

@@ -5,36 +5,48 @@ const OtpVerify = ({navigation, route}) => {
     const [otp, setOtp] = useState('');
 
     const sendToBackend = async () => {
-        // const userdata = await route.params;
-        // console.log(userdata.otp, otp);
-        // if(userdata.otp != otp) {
-        //     ToastAndroid.show('Please Enter a valid code', ToastAndroid.BOTTOM);
-        // }
-        // else {
-        //     fetch('http://10.0.2.2.:3000/verify', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify(userdata.data)
-        //     })
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         if(data.error) {
-        //             ToastAndroid.show(`${data.error}`, ToastAndroid.BOTTOM);
-        //         }
-        //         else {
-        //             console.log(userdata.data);
-        //             alert('Account created Successfully');
-        //             navigation.navigate('Login');
-        //         }
-        //     });
-        // }
+        const userdata = await route.params;
+        console.log(userdata, otp);
+        if(userdata.otp != otp) {
+            ToastAndroid.show('Please Enter a valid code', ToastAndroid.BOTTOM);
+        }
+        else {
+            fetch('http://10.0.2.2.:3000/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userdata.data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) {
+                    ToastAndroid.show(`${data.error}`, ToastAndroid.BOTTOM);
+                }
+                else {
+                    console.log(userdata.data);
+                    alert('Account created Successfully');
+                    navigation.navigate('Login');
+                }
+            });
+        }
 
-        navigation.navigate('Login');
+        // navigation.navigate('Login');
     }
 
     // ToastAndroid.show('Please Enter your email', ToastAndroid.BOTTOM);
+
+    const verifyOtp = async () => {
+        try {
+            const res = await route.params.otpData.confirm(otp);
+            // console.log(res);
+            alert('User Verified');
+            navigation.navigate('MyTabs');
+        }
+        catch(err) {
+            console.log(err);
+        }
+    }
 
     return (
         <View style={styles.container}>

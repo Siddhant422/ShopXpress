@@ -1,5 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ToastAndroid, } from 'react-native'
-import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ToastAndroid, Image,} from 'react-native'
+import React, { useState, useEffect } from 'react';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import user from '../data/Schema/userSchema';
 
 const SignUp = ({navigation}) => {
     const [fdata, setFdata] = useState({
@@ -9,62 +13,130 @@ const SignUp = ({navigation}) => {
         password: ''
     });
 
+    useEffect(() => {
+        GoogleSignin.configure({
+                webClientId : "841661067412-1i112l7u1jfjhj4cdtqaecq8kmbspav8.apps.googleusercontent.com",
+            }
+        );
+    }, []);
+
     const sendToBackend = async () => {
-        // if(fdata.name == '') {
-        //     ToastAndroid.show('Please Enter Name', ToastAndroid.BOTTOM);
-        // }
-        // else if(fdata.email == '') {
-        //     ToastAndroid.show('Please Enter Email', ToastAndroid.BOTTOM);
-        // }
-        // else if(fdata.phoneNo == '') {
-        //     ToastAndroid.show('Please Enter Phone Number', ToastAndroid.BOTTOM);
-        // }
-        // else if(fdata.password == '') {
-        //     ToastAndroid.show('Please Enter Password', ToastAndroid.BOTTOM);
-        // }
-        // else {
-        //     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-        //     if(reg.test(fdata.email) == true) {
-        //         if(fdata.phoneNo.length < 10) {
-        //             ToastAndroid.show('Please Enter A Valid Phone Number', ToastAndroid.BOTTOM);
-        //         }
-        //         else {
-        //             if(fdata.password.length < 6) {
-        //                 ToastAndroid.show('Password must be atleast 6 characters long', ToastAndroid.BOTTOM);
-        //             }
-        //             else {
-        //                 fetch('http://10.0.2.2.:3000/signup', {
-        //                     method: 'POST',
-        //                     headers: {
-        //                         'Content-Type': 'application/json'
-        //                     },
-        //                     body: JSON.stringify(fdata)
-        //                 })
-        //                 .then(res => res.json())
-        //                 .then(data => {
-        //                     if(data.error) {
-        //                         ToastAndroid.show(`${data.error}`, ToastAndroid.BOTTOM);
-        //                     }
-        //                     else {
-        //                         // console.log(data.otp);
-        //                         navigation.navigate('OtpVerify', {data: fdata, otp: data.otp})
-        //                         // alert('Account created Successfully');
-        //                         // navigation.navigate;
-        //                     }
-        //                 });
+        if(fdata.name == '') {
+            ToastAndroid.show('Please Enter Name', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.email == '') {
+            ToastAndroid.show('Please Enter Email', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.phoneNo == '') {
+            ToastAndroid.show('Please Enter Phone Number', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.password == '') {
+            ToastAndroid.show('Please Enter Password', ToastAndroid.BOTTOM);
+        }
+        else {
+            let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+            if(reg.test(fdata.email) == true) {
+                if(fdata.phoneNo.length < 10) {
+                    ToastAndroid.show('Please Enter A Valid Phone Number', ToastAndroid.BOTTOM);
+                }
+                else {
+                    if(fdata.password.length < 6) {
+                        ToastAndroid.show('Password must be atleast 6 characters long', ToastAndroid.BOTTOM);
+                    }
+                    else {
+                        fetch('http://10.0.2.2.:3000/signup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(fdata)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.error) {
+                                ToastAndroid.show(`${data.error}`, ToastAndroid.BOTTOM);
+                            }
+                            else {
+                                // console.log(data.otp);
+                                navigation.navigate('OtpVerify', {data: fdata, otp: data.otp})
+                                // alert('Account created Successfully');
+                                // navigation.navigate;
+                            }
+                        });
 
-        //             }
-        //         }
-        //     }
-        //     else {
-        //         ToastAndroid.show('Please Enter A Valid Email', ToastAndroid.BOTTOM);
-        //     }
-        // }
+                    }
+                }
+            }
+            else {
+                ToastAndroid.show('Please Enter A Valid Email', ToastAndroid.BOTTOM);
+            }
+        }
 
-        navigation.navigate('OtpVerify')
+        // navigation.navigate('OtpVerify')
     }
 
     // ToastAndroid.show('Please Enter your email', ToastAndroid.BOTTOM);
+
+    const signUpFirebase = async () => {
+        if(fdata.name == '') {
+            ToastAndroid.show('Please Enter Name', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.email == '') {
+            ToastAndroid.show('Please Enter Email', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.phoneNo == '') {
+            ToastAndroid.show('Please Enter Phone Number', ToastAndroid.BOTTOM);
+        }
+        else if(fdata.password == '') {
+            ToastAndroid.show('Please Enter Password', ToastAndroid.BOTTOM);
+        }
+        else {
+            let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+            if(reg.test(fdata.email) == true) {
+                if(fdata.phoneNo.length < 10) {
+                    ToastAndroid.show('Please Enter A Valid Phone Number', ToastAndroid.BOTTOM);
+                }
+                else {
+                    if(fdata.password.length < 6) {
+                        ToastAndroid.show('Password must be atleast 6 characters long', ToastAndroid.BOTTOM);
+                    }
+                    else {
+                        try {
+                            const userSignUp = await auth().createUserWithEmailAndPassword(fdata.email, fdata.password);
+                            alert('Account created Successfully');
+                            user.name = fdata.name;
+                            user.email = fdata.email;
+                            user.phoneNo = fdata.phoneNo;
+                            console.log(user);
+                            console.log(userSignUp);
+                            console.log(userSignUp.user.uid);
+                            await firestore().collection('users').doc(userSignUp.user.uid).set(user);
+                            navigation.navigate('MyTabs');
+                        }
+                        catch(err) {
+                            console.log(err);
+                            ToastAndroid.show('User Already Exist', ToastAndroid.BOTTOM);
+                        }
+                    }
+                }
+            }
+            else {
+                ToastAndroid.show('Please Enter A Valid Email', ToastAndroid.BOTTOM);
+            }
+        }
+    }
+
+    const googleLogin = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const user = await GoogleSignin.signIn();
+            console.log(user);
+            navigation.navigate('MyTabs');
+        } 
+        catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -104,13 +176,22 @@ const SignUp = ({navigation}) => {
                 autoCorrect={false}
                 secureTextEntry={true}
             />
-            <TouchableOpacity style={styles.button} onPress={()=>sendToBackend()}>
+            <TouchableOpacity style={styles.button} onPress={()=>signUpFirebase()}>
                 <Text style={styles.buttonTitle}>Sign up</Text>
             </TouchableOpacity>
             <View style={styles.footer}>
                 <Text style={styles.footerText}>Already have an account?</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={styles.footerLink}>Log in</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={{marginTop: 20}}>
+                <Text style={{textAlign: 'center', color: '#9DB2BF'}}>--------------- OR ---------------</Text>
+                <TouchableOpacity onPress={() => googleLogin()}>
+                    <View style={styles.googleBox}>
+                        <Image source={require('../assets/google.png')} style={{height: 30, width: 30}} />
+                        <Text style={{fontSize: 20, fontWeight: 'bold', color: 'black'}}>Sign in with Google</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
         </View>
@@ -134,7 +215,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 48,
-        borderRadius: 5,
+        borderRadius: 15,
         overflow: 'hidden',
         backgroundColor: '#ECF2FF',
         marginTop: 20,
@@ -147,7 +228,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#E52B50',
         width: '100%',
         height: 48,
-        borderRadius: 5,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
@@ -169,6 +250,19 @@ const styles = StyleSheet.create({
         color: '#E52B50',
         marginLeft: 5,
         fontSize: 16,
+    },
+    googleBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: 25,
+        borderWidth: 1,
+        width: '100%',
+        paddingVertical: 8,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        borderRadius: 15,
+        borderColor: 'grey',
+        
     },
 });
 
