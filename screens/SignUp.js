@@ -4,6 +4,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import user from '../data/Schema/userSchema';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const SignUp = ({navigation}) => {
     const [fdata, setFdata] = useState({
@@ -12,6 +13,8 @@ const SignUp = ({navigation}) => {
         phoneNo: '',
         password: ''
     });
+
+    const [showLoader, setShowLoader] = useState(false);
 
     useEffect(() => {
         GoogleSignin.configure({
@@ -102,6 +105,7 @@ const SignUp = ({navigation}) => {
                     }
                     else {
                         try {
+                            setShowLoader(true);
                             const userSignUp = await auth().createUserWithEmailAndPassword(fdata.email, fdata.password);
                             alert('Account created Successfully');
                             user.name = fdata.name;
@@ -112,8 +116,10 @@ const SignUp = ({navigation}) => {
                             console.log(userSignUp.user.uid);
                             await firestore().collection('users').doc(userSignUp.user.uid).set(user);
                             navigation.navigate('MyTabs');
+                            setShowLoader(false);
                         }
                         catch(err) {
+                            setShowLoader(false);
                             console.log(err);
                             ToastAndroid.show('User Already Exist', ToastAndroid.BOTTOM);
                         }
@@ -140,6 +146,10 @@ const SignUp = ({navigation}) => {
 
     return (
         <View style={styles.container}>
+            <Spinner
+                visible={showLoader}
+                size={50}
+            />
             <Text style={styles.title}>Create an Account</Text>
             <TextInput
                 style={styles.input}

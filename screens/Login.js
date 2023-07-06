@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import firestore, { firebase } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 const Login = ({navigation}) => {
@@ -12,9 +12,7 @@ const Login = ({navigation}) => {
         password: ''
     });
 
-    // useEffect(() => {
-
-    // }, []);
+    const [showLoader, setShowLoader] = useState(false);
 
     const sendToBackend = async () => {
         if(fdata.email == '') {
@@ -64,10 +62,13 @@ const Login = ({navigation}) => {
             let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
             if(reg.test(fdata.email) == true) {
                 try {
+                    setShowLoader(true);
                     const userLogin = await auth().signInWithEmailAndPassword(fdata.email, fdata.password);
                     navigation.navigate('MyTabs');
+                    setShowLoader(false);
                 }
                 catch(err) {
+                    setShowLoader(false);
                     console.log(err);
                     ToastAndroid.show('Credentials do not match or User does not Exist', ToastAndroid.BOTTOM);
                 }
@@ -102,6 +103,10 @@ const Login = ({navigation}) => {
 
     return (
         <View style={styles.container}>
+            <Spinner
+                visible={showLoader}
+                size={50}
+            />
             <Text style={styles.title}>Welcome to ShopXpress</Text>
             <TextInput
                 style={styles.input}
