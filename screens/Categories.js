@@ -7,10 +7,10 @@ const Categories = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 {
-                    items.map((obj,index) => {
+                    items.map((obj) => {
                         return (
                             <View style={styles.outerBox} key={obj.name}>
-                                <TouchableOpacity onPress={() => navigation.navigate('CategoriesItemsList', {name: obj.name,pitems:obj.ptems})} key={obj.name}>
+                                <TouchableOpacity onPress={() => navigation.navigate('CategoriesItemsList', {name: obj.name})} key={obj.name}>
                                     <View style={styles.mainItem} >
                                         <Image source={obj.imagesrc} style={styles.image} />
                                         <Text style={styles.text}>{obj.name}</Text>

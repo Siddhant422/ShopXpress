@@ -8,41 +8,93 @@ import { useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import { addItemCart } from '../screens/Redux/actions/Actions'
 import { useState } from 'react'
+import { Card } from 'react-native-paper'
+import { useEffect } from 'react'
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
 const MenuItem = ({ item }) => {
-  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [isAdded, setIsAdded] = useState(false);
-  const onAddToCart = () => {
-    console.log('item added');
-     dispatch(addItemCart(item))
+  const [addFav, setAddFav] = useState(false);
+
+  useEffect(() => {getFav()}, []);
+
+  const getFav = async () => {
+    try {
+      const currUser = auth().currentUser;
+      const res = await firestore().collection('users').doc(currUser.uid).get();
+      const arr = res._data.favourites;
+
+      for(let i=0; i<arr.length; i++) {
+        if(arr[i].category == item.category) {
+          if(arr[i].productId == item.id) {
+            setAddFav(true);
+            break;
+          }
+        }
+      }
+    }
+    catch(err) {
+      console.log(err);
+    }
   }
+
+  const addToFav = async () => {
+    try {
+      const currUser = auth().currentUser;
+      const newItem = {category: item.category, productId: item.id};
+      await firestore()
+      .collection('users')
+      .doc(currUser.uid)
+      .update({'favourites': addFav ? firestore.FieldValue.arrayRemove(newItem) : firestore.FieldValue.arrayUnion(newItem)});
+
+      setAddFav(!addFav);
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <View style={{ margin: 10 }}>
-      <Pressable onPress={() => navigation.navigate('MenuScreen', { itemsd: item, onAddToCart: onAddToCart ,isAdded:isAdded})} style={{ flexDirection: 'row' }}>
-        <View>
+    <View style={{marginTop: 10, padding: 10, borderRadius: 15, backgroundColor: 'white' }}>
+      <Pressable onPress={() => navigation.navigate('MenuScreen', {item: item})} style={{ flexDirection: 'row' }}>
+        <View style={{marginRight: 5}}>
           <ImageBackground
             imageStyle={{ borderRadius: 6 }}
-            style={{ aspectRatio: 5 / 6, height: 170 }}
-            source={{ uri: item.image }}>
+            style={{height: 150, width: 150, backgroundColor: '#9AC5F4', borderRadius: 15}}
+            source={
+              (item.photos == '') ? 
+              require('../assets/shopping.png') :
+              {uri: item.photos}
+            }
+          >
+            <Pressable onPress={() => {addToFav()}}>
+              {addFav
+                ? <Icon name="heart" style={{ position: "absolute", right: 10, top: 10 }} color="red" size={24} />
+                : <Icon name="hearto" style={{ position: "absolute", right: 10, top: 10 }} color="white" size={24} />
+              }
+            </Pressable>
           </ImageBackground>
-          <Icon name="hearto" style={{ position: "absolute", right: 10, top: 10 }} color="white" size={24} />
         </View>
         <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.name}</Text>
           <View style={styles.descStyle}>
             <MaterialCommunityIcons name="star-circle" size={24} color="green" />
             <Text style={{ marginLeft: 3, fontSize: 15, fontWeight: '400' }}>{item.rating}</Text>
-            <Text style={{ marginLeft: 3 }}>•</Text>
-            <Text style={{ marginLeft: 3, fontSize: 15, fontWeight: '400' }}>{item.time} mins</Text>
+            <Text style={{ marginLeft: 3, fontSize: 15, fontWeight: '400' }}>{'( ' + item.totalReviews + ' )'}</Text>
           </View>
-          <Text style={{ marginTop: 6 }}>{item.adress}</Text>
+          {/* <Text style={{ marginTop: 6 }}>{item.adress}</Text> */}
           <View style={{ flexDirection: 'row', marginTop: 6 }}>
             <FontAwesome name="rupee" size={22} style={{ marginLeft: 3 }} />
-            <Text style={{ marginHorizontal: 10 }}>{item.cost_for_two} for two</Text>
+            <Text style={{ marginHorizontal: 10, fontSize: 15, }}>{item.price}</Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Fontisto name="clock" size={20} style={{ marginTop: 7 }} />
+            <Text style={{ marginTop: 9, marginLeft: 10, fontSize: 15,}}>{item.deliveryTime}</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
             <Fontisto name="motorcycle" size={24} style={{ marginTop: 7 }} />
-            <Text style={{ marginTop: 9, marginLeft: 10 }}>Free Delivery</Text>
+            <Text style={{ marginTop: 9, marginLeft: 10, fontSize: 15, }}>Free Delivery</Text>
           </View>
         </View>
 

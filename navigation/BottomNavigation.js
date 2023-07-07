@@ -22,6 +22,7 @@ import CartListScreen from '../screens/CartListSceen';
 import { useSelector } from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import { useState } from 'react';
+import FavouritesList from '../screens/FavouritesList';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -123,7 +124,7 @@ const MyTabs = () => {
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <Icon name="list" size={25} color={'#E52B50'} />
               </View>
-            );
+            );``
           },
         }}
       />
@@ -278,6 +279,11 @@ const ProfileStackNavigator = () => {
       <Stack.Screen
         name="ProductList"
         component={ProductList}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="FavouritesList"
+        component={FavouritesList}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

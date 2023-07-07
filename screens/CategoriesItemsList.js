@@ -1,19 +1,61 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import MenuItem from '../components/MenuItem'
-import hotels from '../data/hotels';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 const CategoriesItemsList = ({navigation, route}) => {
-  const data = hotels;
-  const data2=route.params.pitems;
+  const category = route.params?.name;
+  const [data, setData] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    getDatabase();
+  }, [])
+
+  const getDatabase = async () => {
+    try {
+      console.log(category);
+      const res = await firestore().collection('products').doc(category).get();
+      // console.log(res);
+      setData(res._data.products);
+    }
+    catch(err) { 
+      console.log(err);
+    }
+  }
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    getDatabase();
+    setIsRefreshing(false);
+  }
+
   return (
-    <View>
-       {data2.map((item, index) => (
-        <MenuItem key={index} item={item} />
-      ))}
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing = {isRefreshing}
+            onRefresh={() => handleRefresh()} 
+          />
+        }
+        style={{paddingHorizontal: 10}}
+      >
+        {
+          data.map((item) => <MenuItem item={item} />)
+        }
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 export default CategoriesItemsList
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#DDE6ED'
+  },
+});

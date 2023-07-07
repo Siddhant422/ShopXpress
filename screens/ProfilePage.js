@@ -54,14 +54,13 @@ const ProfilePage = () => {
     setIsRefreshing(true);
     getDatabase();
     setIsRefreshing(false);
-    // setTimeout(() => {setIsRefreshing(false)}, 2000);
   }
 
   function EditProfileHandler() {
     navigation.navigate('EditProfile');
   }
   function EditFormListHandler() {
-    navigation.navigate('FormList');
+    navigation.navigate('FormList', {userData: userInfo});
   }
   function EditProductListHandler() {
     navigation.navigate('ProductList');
@@ -157,7 +156,7 @@ const ProfilePage = () => {
         </View>
         <View>
           <View>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('FavouritesList')}>
               <Text>
                 <Icon name="shopping-bag" size={20} color="#E52B50" />
               </Text>

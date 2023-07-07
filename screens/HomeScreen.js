@@ -63,9 +63,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 1,
     margin: 10,
-    padding: 10,
+    paddingHorizontal: 10,
     borderColor: '#C0C0C0',
-    borderRadius: 7,
+    borderRadius: 15,
   },
   filterStyle: {
     marginHorizontal: 10,
