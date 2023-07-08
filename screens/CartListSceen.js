@@ -10,11 +10,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addItemCart } from '../screens/Redux/actions/Actions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useState } from 'react'
-const CartListScreen = ({ item }) => {
+const CartListScreen = ({ item, handleChange }) => {
   const navigation = useNavigation();
-  
+  const [quantity, setQuantity] = useState(item.quantityAdded);
+
+  const handleInc = (event) => {
+    const prod = {category: item.category, productId: item.id, quantity: item.quantityAdded};
+    handleChange({prod, event});
+  }
+
   return (
-    <View style={{marginTop: 10, padding: 10, borderRadius: 15, backgroundColor: 'white' }}>
+    <View style={{marginTop: 10, marginHorizontal: 10,padding: 10, borderRadius: 15, backgroundColor: 'white' }}>
       <Pressable onPress={() => navigation.navigate('MenuScreen', {item: item})} style={{ flexDirection: 'row' }}>
         <View style={{marginRight: 5}}>
           <ImageBackground
@@ -26,7 +32,6 @@ const CartListScreen = ({ item }) => {
               {uri: item.photos}
             }>
           </ImageBackground>
-          <Icon name="hearto" style={{ position: "absolute", right: 10, top: 10 }} color="white" size={24} />
         </View>
         <View style={{ marginLeft: 10 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{item.name}</Text>
@@ -43,12 +48,15 @@ const CartListScreen = ({ item }) => {
             <Text style={{ marginTop: 9, marginLeft: 10, fontSize: 15, }}>Free Delivery</Text>
           </View>
           <View style={styles.descStyle}>
-            <Pressable style={styles.addToCart} onPress={()=>{}}>
+            <Pressable style={styles.addToCart} onPress={()=>{handleInc(1)}}>
               <Text style={{color:'white' , fontWeight:'700', fontSize: 25, textAlign: 'center'}}>+</Text>
             </Pressable>
             <Text style={{fontSize:18,marginHorizontal:12}}> {item.quantityAdded}</Text>
-            <Pressable style={styles.addToCart} onPress={()=>{}}>
+            <Pressable style={styles.addToCart} onPress={()=>{handleInc(-1)}}>
               <Text style={{color:'white' , fontWeight:'bold', fontSize: 25, textAlign: 'center'}}>-</Text>
+            </Pressable>
+            <Pressable style={{marginLeft: 17, padding: 3, borderRadius: 20, backgroundColor: '#E52B50'}} onPress={()=>{handleInc(0)}}>
+              <MaterialCommunityIcons name='delete' size={30} color='white'/>
             </Pressable>
           </View>
         </View>
@@ -65,9 +73,6 @@ const styles = StyleSheet.create({
       borderRadius:50,
       width:35,
       height:35,
-      // justifyContent: 'center',
-      // alignItems: 'center'
-      // textAlign: 'center',
     },
     addRemoveView:{
       flexDirection:'row',

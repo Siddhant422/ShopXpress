@@ -8,11 +8,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useEffect } from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const WishList = () => {
   const [cartValue, setCartValue] = useState(0);
   const [items, setItems] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(()=>{getDatabase()}, []);
 
@@ -46,8 +48,42 @@ const WishList = () => {
     setIsRefreshing(false);
   }
 
+  const handleChange = async ({prod, event}) => {
+    try {
+      setShowLoader(true);
+      const newProd = {category: prod.category, productId: prod.productId, quantity: parseInt(prod.quantity) + parseInt(event)};
+      const currUser = auth().currentUser;
+      await firestore()
+      .collection('users')
+      .doc(currUser.uid)
+      .update({'cartItems': firestore.FieldValue.arrayRemove(prod)});
+
+      if(event == 0 || newProd.quantity == 0) {
+        getDatabase();
+        setShowLoader(false);
+        return;
+      }
+
+      await firestore()
+      .collection('users')
+      .doc(currUser.uid)
+      .update({'cartItems': firestore.FieldValue.arrayUnion(newProd)});
+
+      getDatabase();
+      setShowLoader(false);
+    }
+    catch(err) {
+      setShowLoader(false);
+      console.log(err);
+    }
+  }
+
   return (
-    <View style={{flex:1, marginHorizontal: 10}}>
+    <View style={{flex:1, backgroundColor: '#DDE6ED'}}>
+      <Spinner
+        visible={showLoader}
+        size={50}
+      />
       <FlatList
         refreshControl={
           <RefreshControl
@@ -55,10 +91,10 @@ const WishList = () => {
             onRefresh={() => handleRefresh()} 
           />
         } 
-        data={items} 
+        data={items}
         renderItem={({item, key})=>{
           return (
-            <CartListScreen key={key} item={item}/>
+            <CartListScreen key={key} item={item} handleChange={handleChange}/>
           )
         }}
       >
