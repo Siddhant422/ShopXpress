@@ -9,7 +9,7 @@ let product = {
     details: '',
     rating: 0.0,
     totalReviews: 0,
-    photos: '',
+    photos: [],
 }
 
 export default product;

@@ -23,11 +23,16 @@ const ProfilePage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleLogout = async () => {
-    await auth().signOut();
-    // navigation.goBack();
-    // await MyTabs();
-    // navigation.navigate('OnboardingScreenNavigation');
-    // navigation.dispatch(StackActions.replace('OnboardingScreenNavigation'));
+    try {
+      await auth().signOut();
+      // navigation.goBack();
+      // await MyTabs();
+      // navigation.navigate('OnboardingScreenNavigation');
+      // navigation.dispatch(StackActions.replace('OnboardingScreenNavigation'));
+    }
+    catch(err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -37,9 +42,7 @@ const ProfilePage = () => {
   const getDatabase = async () => {
     try {
       const currUser  = auth().currentUser;
-      console.log(currUser);
       const data = await firestore().collection('users').doc(currUser.uid).get();
-      console.log(data._data);
       // const imgdata = await storage().ref('/users/location.png').getDownloadURL();
       // console.log(imgdata);
       // data._data.photo = imgdata;

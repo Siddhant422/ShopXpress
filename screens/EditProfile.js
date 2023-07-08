@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,TouchableOpacity ,ImageBackground,TextInput} from 'react-native'
+import { StyleSheet, Text, View,TouchableOpacity ,ImageBackground,TextInput, PermissionsAndroid} from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -6,6 +6,7 @@ import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunit
 import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const EditProfile = ({navigation}) => {
   const [newData, setNewData] = useState({
@@ -14,7 +15,29 @@ const EditProfile = ({navigation}) => {
     pincode: '',
     city: '',
     state: ''
-  })
+  });
+  const [cameraPhoto, setCameraPhoto] = useState('');
+
+  let options = {
+    saveToPhotos: true,
+    mediaType: 'photo',
+  };
+
+  const openCamera = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+    );
+
+    if(granted === PermissionsAndroid.RESULTS.GRANTED) {
+      const result = await launchCamera(options);
+      setCameraPhoto(result.assets[0].uri);
+    }
+  }
+
+  const openGallery = async () => {
+    const result = await launchImageLibrary(options);
+    setCameraPhoto(result.assets[0].uri);
+  }
 
   const handleUpdate = async () => {
     try {

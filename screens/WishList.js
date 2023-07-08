@@ -27,11 +27,12 @@ const WishList = () => {
       let data = [];
       let total = 0.0;
       await Promise.all(arr.map(async (item) => {
-        const res = await firestore().collection('products').doc(item.category).get();
-        const dataarr = res._data.products[item.productId];
-        dataarr.quantityAdded = item.quantity;
-        total += (dataarr.price*item.quantity);
-        data.push(dataarr);
+        const res = await firestore().collection('products').doc(item.category)
+        .collection('categoryProducts').doc((item.productId).toString()).get();
+        const dataobj = res._data;
+        dataobj.quantityAdded = item.quantity;
+        total += (dataobj.price*item.quantity);
+        data.push(dataobj);
       }));
       
       setItems(data);

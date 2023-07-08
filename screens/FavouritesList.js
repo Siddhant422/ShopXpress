@@ -23,9 +23,10 @@ const FavouritesList = () => {
   
         let data = [];
         await Promise.all(arr.map(async (item) => {
-          const res = await firestore().collection('products').doc(item.category).get();
-          const dataarr = res._data.products[item.productId];
-          data.push(dataarr);
+          const res = await firestore().collection('products').doc(item.category)
+          .collection('categoryProducts').doc((item.productId).toString()).get();
+          const dataobj = res._data;
+          data.push(dataobj);
         }));
         
         setItems(data);

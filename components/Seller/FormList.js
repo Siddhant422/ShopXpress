@@ -51,14 +51,20 @@ const SellProductForm = ({navigation, route}) => {
       try {
         const currUser  = auth().currentUser;
         const res = await firestore().collection('products').doc(finalProduct.category).get();
-        const resarr = res._data.products;
-        finalProduct.id = resarr.length;
+        finalProduct.id = res._data.totalProducts;
         finalProduct.sellerid = currUser.uid;
+
+        await firestore()
+        .collection('products')
+        .doc(finalProduct.category)
+        .update({'totalProducts': finalProduct.id+1});
         
         await firestore()
         .collection('products')
         .doc(finalProduct.category)
-        .update({'products': firestore.FieldValue.arrayUnion(finalProduct)});
+        .collection('categoryProducts')
+        .doc((finalProduct.id).toString())
+        .set(finalProduct);
         
         const newProd = {category: finalProduct.category, productId: finalProduct.id};
         await firestore()

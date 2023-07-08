@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, RefreshControl, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MenuItem from '../components/MenuItem'
 import auth from '@react-native-firebase/auth';
@@ -12,19 +12,31 @@ const CategoriesItemsList = ({navigation, route}) => {
 
   useEffect(() => {
     getDatabase();
-  }, [])
+  }, []);
 
   const getDatabase = async () => {
     try {
       console.log(category);
       const res = await firestore().collection('products').doc(category).get();
-      // console.log(res);
-      setData(res._data.products);
+      const n = res._data.totalProducts;
+      let arr = await getProducts(n);
+      setData(arr);
     }
     catch(err) { 
       console.log(err);
     }
   }
+
+  const getProducts = async (n) => {
+    let arr = [];
+    for(let i=0; i<n; i++) {
+      const res = await firestore().collection('products').doc(category).collection('categoryProducts').doc(i.toString()).get();
+      const obj = res._data;
+      arr.push(obj);
+    }
+
+    return arr;
+  };
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -34,19 +46,21 @@ const CategoriesItemsList = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing = {isRefreshing}
-            onRefresh={() => handleRefresh()} 
-          />
-        }
-        style={{paddingHorizontal: 10}}
-      >
-        {
-          data.map((item) => <MenuItem item={item} />)
-        }
-      </ScrollView>
+        <FlatList
+          refreshControl={
+              <RefreshControl
+              refreshing = {isRefreshing}
+              onRefresh={() => handleRefresh()} 
+              />
+          }
+          data={data}
+          renderItem={({item, key})=>{
+              return (
+                  <MenuItem key={key} item={item}/>
+              )
+          }}
+        >
+        </FlatList>
     </SafeAreaView>
   )
 }
