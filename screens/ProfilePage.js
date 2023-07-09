@@ -27,7 +27,7 @@ const ProfilePage = () => {
       await auth().signOut();
       // navigation.goBack();
       // await MyTabs();
-      // navigation.navigate('OnboardingScreenNavigation');
+      // navigation.navigate('OnboardingScreenNavigtion');
       // navigation.dispatch(StackActions.replace('OnboardingScreenNavigation'));
     }
     catch(err) {
@@ -43,9 +43,6 @@ const ProfilePage = () => {
     try {
       const currUser  = auth().currentUser;
       const data = await firestore().collection('users').doc(currUser.uid).get();
-      // const imgdata = await storage().ref('/users/location.png').getDownloadURL();
-      // console.log(imgdata);
-      // data._data.photo = imgdata;
       setUserInfo(data._data);
     }
     catch(err) {
@@ -60,7 +57,7 @@ const ProfilePage = () => {
   }
 
   function EditProfileHandler() {
-    navigation.navigate('EditProfile');
+    navigation.navigate('EditProfile', {userInfo: userInfo});
   }
   function EditFormListHandler() {
     navigation.navigate('FormList', {userData: userInfo});

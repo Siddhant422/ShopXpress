@@ -3,45 +3,56 @@ import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
-import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
+import ImagePicker from 'react-native-image-crop-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-const EditProfile = ({navigation}) => {
+const EditProfile = ({navigation, route}) => {
+  const oldData = route.params.userInfo;
+  const [showLoader, setShowLoader] = useState(false);
   const [newData, setNewData] = useState({
-    name: '',
-    phoneNo: '',
-    pincode: '',
-    city: '',
-    state: ''
+    name: oldData.name,
+    phoneNo: oldData.phoneNo,
+    pincode: oldData.pincode,
+    city: oldData.city,
+    state: oldData.state,
+    photo: oldData.photo,
   });
-  const [cameraPhoto, setCameraPhoto] = useState('');
-
-  let options = {
-    saveToPhotos: true,
-    mediaType: 'photo',
-  };
-
-  const openCamera = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-    );
-
-    if(granted === PermissionsAndroid.RESULTS.GRANTED) {
-      const result = await launchCamera(options);
-      setCameraPhoto(result.assets[0].uri);
-    }
-  }
 
   const openGallery = async () => {
-    const result = await launchImageLibrary(options);
-    setCameraPhoto(result.assets[0].uri);
+    ImagePicker.openPicker({
+      cropping: true,
+      cropperCircleOverlay: true,
+      compressImageQuality: 0.5,
+    })
+    .then(
+      (res) => {
+        setNewData({...newData, photo: res.path});
+      }
+    )
+    .catch(err => console.log(err));
   }
 
   const handleUpdate = async () => {
     try {
+      setShowLoader(true);
       const currUser  = auth().currentUser;
+      if(newData.name == oldData.name) delete newData.name;
+      if(newData.phoneNo == oldData.phoneNo) delete newData.phoneNo;
+      if(newData.pincode == oldData.pincode) delete newData.pincode;
+      if(newData.city == oldData.city) delete newData.city;
+      if(newData.state == oldData.state) delete newData.state;
+      
+      if(newData.photo == oldData.photo) delete newData.photo;
+      else {
+        const reference = storage().ref(`users/${currUser.uid}/profilePhoto/myPhoto.jpg`);
+        await reference.putFile(newData.photo);
+        const url = await reference.getDownloadURL();
+        setNewData({...newData, photo: url});
+      }
+
       await firestore()
       .collection('users')
       .doc(currUser.uid)
@@ -49,26 +60,36 @@ const EditProfile = ({navigation}) => {
 
       alert('Data Updated');
       navigation.goBack();
+      setShowLoader(false);
     }
     catch(err) {
+      setShowLoader(false);
       console.log(err);
     }
   }
 
   return (
     <View style={styles.container}>
+      <Spinner
+          visible={showLoader}
+          size={50}
+      />
       <View style={{margin:20}}>
         <View style={{alignItems:'center'}}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>openGallery()}>
             <View style={{
               height:100,
               width:100,
-              borderRadius:15,
+              borderRadius:50,
               justifyContent:'center',
               alignItems:'center'
             }}>
               <ImageBackground
-              source={require('../assets/profile.png')}
+              source={
+                newData.photo == '' 
+                ? require('../assets/profile.png')
+                : {uri: newData.photo}
+              }
               style={{height:100,width:100}}
               imageStyle={{borderRadius:20}}
               >
@@ -93,7 +114,6 @@ const EditProfile = ({navigation}) => {
               </ImageBackground>
             </View>
           </TouchableOpacity>
-        {/* <Text style={{marginTop:10, fontSize:18,fontWeight:'bold'}}>Pranjal Srivastava</Text> */}
         </View>
 
         <View style={styles.action}> 
@@ -103,6 +123,7 @@ const EditProfile = ({navigation}) => {
             placeholderTextColor={'#666666'}
             style={styles.textInput}
             autoCorrect={false}
+            value={newData.name}
             onChangeText={text => setNewData({...newData, name: text})}
           >
           </TextInput>
@@ -117,6 +138,7 @@ const EditProfile = ({navigation}) => {
             placeholderTextColor={'#666666'}
             style={styles.textInput}
             autoCorrect={false}
+            value={newData.phoneNo}
             onChangeText={text => setNewData({...newData, phoneNo: text})}
           >
           </TextInput>
@@ -131,6 +153,7 @@ const EditProfile = ({navigation}) => {
             placeholderTextColor={'#666666'}
             style={styles.textInput}
             autoCorrect={false}
+            value={newData.pincode}
             onChangeText={text => setNewData({...newData, pincode: text})}
           >
           </TextInput>
@@ -143,6 +166,7 @@ const EditProfile = ({navigation}) => {
             placeholderTextColor={'#666666'}
             style={styles.textInput}
             autoCorrect={false}
+            value={newData.city}
             onChangeText={text => setNewData({...newData, city: text})}
           >
           </TextInput>
@@ -155,6 +179,7 @@ const EditProfile = ({navigation}) => {
             placeholderTextColor={'#666666'}
             style={styles.textInput}
             autoCorrect={false}
+            value={newData.state}
             onChangeText={text => setNewData({...newData, state: text})}
           >
           </TextInput>
