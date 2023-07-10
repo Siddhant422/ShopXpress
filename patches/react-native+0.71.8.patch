@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native/index.js b/node_modules/react-native/index.js
-index f556fa3..ccca027 100644
+index f556fa3..2986043 100644
 --- a/node_modules/react-native/index.js
 +++ b/node_modules/react-native/index.js
-@@ -411,43 +411,18 @@ module.exports = {
+@@ -411,43 +411,15 @@ module.exports = {
    },
    // Deprecated Prop Types
    get ColorPropType(): $FlowFixMe {
@@ -15,7 +15,6 @@ index f556fa3..ccca027 100644
 -    );
      return require('deprecated-react-native-prop-types').ColorPropType;
    },
-+  
    get EdgeInsetsPropType(): $FlowFixMe {
 -    console.error(
 -      'EdgeInsetsPropType will be removed from React Native, along with all ' +
@@ -26,7 +25,6 @@ index f556fa3..ccca027 100644
 -    );
      return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
    },
-+  
    get PointPropType(): $FlowFixMe {
 -    console.error(
 -      'PointPropType will be removed from React Native, along with all ' +
@@ -37,7 +35,6 @@ index f556fa3..ccca027 100644
 -    );
      return require('deprecated-react-native-prop-types').PointPropType;
    },
-+  
    get ViewPropTypes(): $FlowFixMe {
 -    console.error(
 -      'ViewPropTypes will be removed from React Native, along with all ' +
@@ -49,3 +46,11 @@ index f556fa3..ccca027 100644
      return require('deprecated-react-native-prop-types').ViewPropTypes;
    },
  };
+diff --git a/node_modules/react-native/scripts/.packager.bat b/node_modules/react-native/scripts/.packager.bat
+new file mode 100644
+index 0000000..e89260e
+--- /dev/null
++++ b/node_modules/react-native/scripts/.packager.bat
+@@ -0,0 +1 @@
++set RCT_METRO_PORT=8081
+\ No newline at end of file

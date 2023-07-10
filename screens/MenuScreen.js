@@ -4,11 +4,12 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Fontisto from 'react-native-vector-icons/Fontisto'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { useEffect } from 'react'
+import {SliderBox} from 'react-native-image-slider-box';
+import {FlatListSlider} from 'react-native-flatlist-slider';
 
 const MenuScreen = ({navigation,route}) => {
   const item = route.params.item;
@@ -82,23 +83,22 @@ const MenuScreen = ({navigation,route}) => {
   return (
     <ScrollView style={{flex:1, marginHorizontal: 10, marginBottom: 100}}>
       <View style={styles.childContainer}>
-        <View>
-          <ImageBackground 
-            style={styles.image} 
-            resizeMode='contain'
-            source = {
-              (item.photos.length == 0) ? 
-              require('../assets/shopping.png') :
-              {uri: item.photos[0]}
-            }
-          >
+        <View style={{}}>
+        <SliderBox images={item.photos}
+          dotColor = '#E52B50'
+          sliderBoxHeight={500}
+          inactiveDotColor = 'white'
+          ImageComponentStyle = {styles.image}
+          borderRadius={15}
+        >
           <Pressable onPress={() => {addToFav()}}>
             {addFav
               ? <Icon name="heart" style={{ position: "absolute", right: 10, top: 10 }} color="red" size={24} />
               : <Icon name="hearto" style={{ position: "absolute", right: 10, top: 10 }} color="white" size={24} />
             }
           </Pressable>
-          </ImageBackground>
+        </SliderBox>
+
         </View>
         <View style = {{flexDirection:'column'}}>
           <Text style={styles.title}>{item.name}</Text>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   image:{
     width: '100%',
     height: undefined,
-    aspectRatio: 1
+    aspectRatio: 1,
   },
   title:{
     fontWeight:'bold',
