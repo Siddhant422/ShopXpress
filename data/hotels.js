@@ -9,6 +9,7 @@ export default [
         ratings:"1k",
         cost_for_two:999,
         cuisines:"north Indian, South Indian",
+        photos: [],
         menu:[
             {
                 id:"20",
@@ -137,8 +138,8 @@ export default [
         adress:"Richmond Town, Ashok Nagar ",
         ratings:"500",
         cost_for_two:450,
-        cuisines:"north Indian, South Indian"
-
+        cuisines:"north Indian, South Indian",
+        photos: [],
     },
     {
         id:"2",
@@ -149,7 +150,8 @@ export default [
         adress:"Residency Road, Shantinagar",
         ratings:"100",
         cost_for_two:430,
-        cuisines:"north Indian, South Indian"
+        cuisines:"north Indian, South Indian",
+        photos: [],
 
     }
 ]

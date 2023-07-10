@@ -15,6 +15,7 @@ const WishList = () => {
   const [items, setItems] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(()=>{getDatabase()}, []);
 
@@ -26,15 +27,18 @@ const WishList = () => {
 
       let data = [];
       let total = 0.0;
+      let cnt=0;
       await Promise.all(arr.map(async (item) => {
         const res = await firestore().collection('products').doc(item.category)
         .collection('categoryProducts').doc((item.productId).toString()).get();
         const dataobj = res._data;
         dataobj.quantityAdded = item.quantity;
+        cnt += item.quantity;
         total += (dataobj.price*item.quantity);
         data.push(dataobj);
       }));
       
+      setTotalItems(cnt);
       setItems(data);
       setCartValue(total);
     }
@@ -104,7 +108,7 @@ const WishList = () => {
      <View style={styles.checkoutView}>
       <View style={{flexDirection:'row',marginTop:25,justifyContent:'space-between'}}>
       <View style={{flexDirection:'column'}}>
-      <Text style={{fontSize:17,color:'grey',fontWeight:'700'}}>Items:{items.length}</Text>
+      <Text style={{fontSize:17,color:'grey',fontWeight:'700'}}>Items:{totalItems}</Text>
       <Text style={{fontSize:17,color:'grey',fontWeight:'700'}}>Total: ₹{cartValue}</Text>
       </View>
       <View style={{paddingLeft:30,paddingBottom:60}}>

@@ -1,4 +1,4 @@
-import { StyleSheet,ImageBackground,ScrollView,Text, View, Pressable } from 'react-native'
+import { StyleSheet,ImageBackground,ScrollView,Text, View, Pressable, Image } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -80,15 +80,16 @@ const MenuScreen = ({navigation,route}) => {
   }
 
   return (
-    <ScrollView style={{flex:1, marginHorizontal: 10}}>
+    <ScrollView style={{flex:1, marginHorizontal: 10, marginBottom: 100}}>
       <View style={styles.childContainer}>
         <View>
           <ImageBackground 
             style={styles.image} 
+            resizeMode='contain'
             source = {
-              (item.photos == '') ? 
+              (item.photos.length == 0) ? 
               require('../assets/shopping.png') :
-              {uri: item.photos}
+              {uri: item.photos[0]}
             }
           >
           <Pressable onPress={() => {addToFav()}}>
@@ -98,7 +99,6 @@ const MenuScreen = ({navigation,route}) => {
             }
           </Pressable>
           </ImageBackground>
-          {/* <Icon name ="hearto" style = {{position: "absolute", right:10, top:10}} color="white" size={24}/> */}
         </View>
         <View style = {{flexDirection:'column'}}>
           <Text style={styles.title}>{item.name}</Text>
@@ -153,8 +153,9 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   image:{
-    width:'100%',
-    height:250,
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1
   },
   title:{
     fontWeight:'bold',

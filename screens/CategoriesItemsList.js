@@ -70,6 +70,7 @@ export default CategoriesItemsList
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DDE6ED'
+    backgroundColor: '#DDE6ED',
+    paddingHorizontal: 10,
   },
 });

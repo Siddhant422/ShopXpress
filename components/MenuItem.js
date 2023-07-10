@@ -58,14 +58,15 @@ const MenuItem = ({ item }) => {
   return (
     <View style={{marginTop: 10, padding: 10, borderRadius: 15, backgroundColor: 'white' }}>
       <Pressable onPress={() => navigation.navigate('MenuScreen', {item: item})} style={{ flexDirection: 'row' }}>
-        <View style={{marginRight: 5}}>
+        <View style={{marginRight: 5, height: 150, width: 150, borderRadius: 15}}>
           <ImageBackground
             imageStyle={{ borderRadius: 6 }}
-            style={{height: 150, width: 150, backgroundColor: '#9AC5F4', borderRadius: 15}}
+            style={{    width: '100%', height: undefined, aspectRatio: 1}}
+            resizeMode='contain'
             source={
-              (item.photos == '') ? 
+              (item.photos.length == 0) ? 
               require('../assets/shopping.png') :
-              {uri: item.photos}
+              {uri: item.photos[0]}
             }
           >
             <Pressable onPress={() => {addToFav()}}>
