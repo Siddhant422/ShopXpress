@@ -12,13 +12,12 @@ const Carousel = () => {
       <SliderBox images={images} 
       autoplay
       circleLoop
-      resizeMode='cover'
       borderRadius={15}
       dotColor = '#E52B50'
       inactiveDotColor = 'white'
       ImageComponentStyle = {{
         borderRadius: 15,
-        width: "94%",
+        width: "100%",
       }}
       />
     </View>

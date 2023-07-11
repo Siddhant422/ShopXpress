@@ -88,6 +88,7 @@ const MenuScreen = ({navigation,route}) => {
           dotColor = '#E52B50'
           sliderBoxHeight={500}
           inactiveDotColor = 'white'
+          resizeMode='contain'
           ImageComponentStyle = {styles.image}
           borderRadius={15}
         >
@@ -140,7 +141,6 @@ export default MenuScreen
 const styles = StyleSheet.create({
   childContainer:{
     width:'100%',
-    paddingHorizontal:15,
     paddingVertical:10,
   },
   rootContainer:{

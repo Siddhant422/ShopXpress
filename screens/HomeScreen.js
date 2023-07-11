@@ -18,7 +18,7 @@ import OfferList from '../components/OfferList';
 const HomeScreen = () => {
   const data = hotels;
   return (
-    <ScrollView>
+    <ScrollView style={{marginHorizontal: 10}}>
       <View style={styles.mainContainer}>
         <TextInput style={{fontSize: 17}} placeholder="Search your item here" />
         <Icon name="search" size={30} color="#E52B50" />
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    margin: 10,
+    marginVertical: 10,
     paddingHorizontal: 10,
     borderColor: '#C0C0C0',
     borderRadius: 15,

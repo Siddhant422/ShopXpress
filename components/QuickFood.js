@@ -32,7 +32,7 @@ export default QuickFood
 
 const styles = StyleSheet.create({
     mainContainer: {
-        marginHorizontal: 10,
+        // marginHorizontal: 10,
     },
     textStyle : {
         paddingHorizontal: 5,
