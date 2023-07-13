@@ -70,9 +70,11 @@ const SellProductForm = ({navigation, route}) => {
         const imgname = i.toString() + '.jpg';
         const reference = storage().ref(`products/${finalProduct.category}/${finalProduct.id}/${imgname}`);
         await reference.putFile(img);
-        const url = await reference.getDownloadURL();
+        let url = await reference.getDownloadURL();
         linkArray.push(url);
       }
+
+      console.log(linkArray);
 
       return linkArray;
     }
@@ -110,7 +112,9 @@ const SellProductForm = ({navigation, route}) => {
 
         let linkArray = await getLinks();
 
-        setFinalProduct({...finalProduct, photos: linkArray});
+        finalProduct.photos = linkArray;
+
+        console.log(finalProduct);
 
         await firestore()
         .collection('products')

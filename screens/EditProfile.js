@@ -49,9 +49,12 @@ const EditProfile = ({navigation, route}) => {
       else {
         const reference = storage().ref(`users/${currUser.uid}/profilePhoto/myPhoto.jpg`);
         await reference.putFile(newData.photo);
-        const url = await reference.getDownloadURL();
-        setNewData({...newData, photo: url});
+
+        const url =  await storage().ref(`users/${currUser.uid}/profilePhoto/myPhoto.jpg`).getDownloadURL();
+        newData.photo = url;
       }
+
+      console.log(newData);  
 
       await firestore()
       .collection('users')
